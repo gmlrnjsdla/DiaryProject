@@ -29,7 +29,7 @@ import java.awt.Font;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-public class WinInsertDiary extends JDialog {
+public class WinDeleteDiary extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	private JTextField tfDate;
@@ -45,13 +45,12 @@ public class WinInsertDiary extends JDialog {
 
 	/**
 	 * Create the dialog.
-	 * @param id 
-	 * @param name 
+	
 	 */
-	public WinInsertDiary(String sid, String sname) {
+	public WinDeleteDiary(String sid, String sname, String mdate, String weather, String title, String content,String pw) {
 		id = sid;
 		name = sname;
-		setTitle(name+"님의 다이어리");
+		setTitle(name+"님의 다이어리 삭제");
 		setBounds(100, 100, 412, 552);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -65,6 +64,8 @@ public class WinInsertDiary extends JDialog {
 		contentPanel.add(lblNewLabel);
 		
 		tfDate = new JTextField();
+		tfDate.setEditable(false);
+		tfDate.setText(mdate);
 		tfDate.setBounds(102, 54, 116, 21);
 		contentPanel.add(tfDate);
 		tfDate.setColumns(10);
@@ -88,8 +89,8 @@ public class WinInsertDiary extends JDialog {
 		contentPanel.add(lblNewLabel_3);
 		
 		
-		
 		JComboBox cbWeather = new JComboBox();
+		cbWeather.setEnabled(false);
 		cbWeather.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				icon = new ImageIcon(".\\weather\\"+cbWeather.getSelectedItem()+".png");
@@ -110,6 +111,9 @@ public class WinInsertDiary extends JDialog {
 //		lblpic.setIcon(new ImageIcon(".\\weather\\맑음.png"));
 		contentPanel.add(lblpic);
 		
+		cbWeather.setSelectedItem(weather);
+		
+		
 		JButton btnNewButton = new JButton("...");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -123,6 +127,8 @@ public class WinInsertDiary extends JDialog {
 		contentPanel.add(btnNewButton);
 		
 		tfTitle = new JTextField();
+		tfTitle.setEditable(false);
+		tfTitle.setText(title);
 		tfTitle.setColumns(10);
 		tfTitle.setBounds(102, 174, 116, 21);
 		contentPanel.add(tfTitle);
@@ -134,6 +140,8 @@ public class WinInsertDiary extends JDialog {
 		contentPanel.add(scrollPane);
 		
 		JTextPane tfContent = new JTextPane();
+		tfContent.setEditable(false);
+		tfContent.setText(content);
 		scrollPane.setViewportView(tfContent);
 		
 		tfId = new JTextField();
@@ -162,13 +170,13 @@ public class WinInsertDiary extends JDialog {
 					int length = tfPw.getText().length();
 					if(length >= 4) {
 						String value = JOptionPane.showInputDialog("비밀번호 입력(확인)");
-						if(tfPw.getText().equals(value)) {
+						if(tfPw.getText().equals(value) && tfPw.getText().equals(pw)) {
 							JOptionPane.showMessageDialog(null, "일치합니다.");
 							okButton.setEnabled(true);
 						}
 					}
 					else {
-						JOptionPane.showMessageDialog(null, "4글자 이상 비밀번호 입력");
+						JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다!");
 						tfPw.setText("");
 						tfPw.requestFocus();
 					}
@@ -183,7 +191,7 @@ public class WinInsertDiary extends JDialog {
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
 			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 			{
-				okButton = new JButton("쓰기");
+				okButton = new JButton("삭제");
 				okButton.setEnabled(false);
 				okButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -192,20 +200,11 @@ public class WinInsertDiary extends JDialog {
 							Connection conn = DriverManager.getConnection
 									("jdbc:mysql://localhost:3306/sqldb", "root","1234");
 							
-							String mdate = tfDate.getText();
-							String weather = (String)cbWeather.getSelectedItem();
-							String pic = "./weather/"+cbWeather.getSelectedItem()+".png";
-							String title = tfTitle.getText();
-							String content = tfContent.getText();
-							String id = tfId.getText();
-							String curpw = tfPw.getText();
-							
-							String sql = "INSERT INTO diarytbl(mdate, weather, pic, title, content, id, curpw) "
-									+ "VALUES('"+mdate+"','"+weather+"','"+pic+"','"+title+"','"+content+"','"+id+"','"+curpw+"')";
+							String sql ="DELETE FROM diarytbl WHERE id='"+tfId.getText()+"' and mdate= '"+tfDate.getText()+"'"; 
 							Statement stmt = conn.createStatement();
 							stmt.executeUpdate(sql);
 							
-							JOptionPane.showMessageDialog(null, "업로드 성공!");
+							JOptionPane.showMessageDialog(null, "삭제 성공!");
 							
 							setVisible(false);
 							

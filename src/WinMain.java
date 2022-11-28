@@ -6,6 +6,9 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import com.mysql.cj.exceptions.RSAException;
+
 import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -13,46 +16,29 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 public class WinMain extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
+	String sid, sname;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		try {
-			WinMain dialog = new WinMain();
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 
 	/**
 	 * Create the dialog.
 	 */
-	public WinMain() {
-		setBounds(100, 100, 450, 300);
+	public WinMain(String id, String name) {
+		sid = id;
+		sname = name;
+		setTitle(sname+"님의 다이어리");
+		
+		setBounds(100, 100, 471, 361);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
-		
-		JButton btnNewButton = new JButton("일기 쓰기");
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				WinInsertDiary windiary = new WinInsertDiary();
-				setVisible(false);
-				windiary.setVisible(true);
-				windiary.setModal(true);
-				
-			}
-		});
-		btnNewButton.setBounds(171, 20, 97, 23);
-		contentPanel.add(btnNewButton);
+		contentPanel.setLayout(new BorderLayout(0, 0));
 		
 		{
 			JPanel buttonPane = new JPanel();
@@ -70,8 +56,49 @@ public class WinMain extends JDialog {
 				buttonPane.add(cancelButton);
 			}
 		}
+		
+		JMenuBar menuBar = new JMenuBar();
+		setJMenuBar(menuBar);
+		{
+			JMenu mnNewMenu = new JMenu("Diary");
+			mnNewMenu.setMnemonic('D');
+			menuBar.add(mnNewMenu);
+			{
+				JMenuItem mnInsertDiary = new JMenuItem("다이어리 쓰기...");
+				mnInsertDiary.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						WinInsertDiary windiary = new WinInsertDiary(id, name);
+						
+						windiary.setModal(true);
+						windiary.setVisible(true);
+					}
+				});
+				mnNewMenu.add(mnInsertDiary);
+			}
+			{
+				JMenuItem mnUpdateDiary = new JMenuItem("다이어리 수정...");
+				mnUpdateDiary.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						WinUpdateSearch winupdatesearch = new WinUpdateSearch(id,name);
+						winupdatesearch.setModal(true);
+						winupdatesearch.setVisible(true);						
+						
+					}
+				});
+				mnNewMenu.add(mnUpdateDiary);
+			}
+			{
+				JMenuItem mnDeleteDiary = new JMenuItem("다이어리 삭제...");
+				mnDeleteDiary.addActionListener(new ActionListener() {
+					public void actionPerformed(ActionEvent e) {
+						WinDateSearch windatesearch = new WinDateSearch(id,name);
+						windatesearch.setModal(true);
+						windatesearch.setVisible(true);						
+						
+					}
+				});
+				mnNewMenu.add(mnDeleteDiary);
+			}
+		}
 	}
-	
-	
-	
 }
