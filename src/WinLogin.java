@@ -16,6 +16,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class WinLogin extends JDialog {
 
@@ -63,6 +65,17 @@ public class WinLogin extends JDialog {
 		contentPanel.add(lblPw);
 		
 		tfPw = new JTextField();
+		tfPw.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					Go();
+					
+				}
+			}
+
+			
+		});
 		tfPw.setColumns(10);
 		tfPw.setBounds(132, 92, 144, 21);
 		contentPanel.add(tfPw);
@@ -70,41 +83,7 @@ public class WinLogin extends JDialog {
 		JButton btnNewButton = new JButton("로그인");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Class.forName("com.mysql.cj.jdbc.Driver");
-					Connection conn = DriverManager.getConnection
-							("jdbc:mysql://localhost:3306/sqldb", "root","1234");
-					
-					String sql = "SELECT pw,name FROM logintbl WHERE id='"+tfId.getText()+"'";
-					Statement stmt = conn.createStatement();
-					ResultSet rs = stmt.executeQuery(sql);
-					
-					if(rs.next()) {
-						String dbpw = rs.getString("pw");
-						String pw = tfPw.getText();
-						if(dbpw.equals(pw)) {
-							String id = tfId.getText();
-							String name = rs.getString("name");
-							WinMain winmain = new WinMain(id,name);
-							setVisible(false);
-							winmain.setModal(true);
-							winmain.setVisible(true);
-							
-						}
-						else {
-							JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다. 다시확인해주세요");
-							tfPw.requestFocus();
-						}
-					
-					}
-					else {
-						JOptionPane.showMessageDialog(null, "없는 아이디입니다. 다시확인해주세요");
-						tfId.requestFocus();
-					}
-					
-					} catch (Exception e1) {
-					e1.printStackTrace();
-					}
+				Go();
 				
 			}
 			
@@ -112,4 +91,45 @@ public class WinLogin extends JDialog {
 		btnNewButton.setBounds(292, 57, 78, 58);
 		contentPanel.add(btnNewButton);
 	}
+	
+	private void Go() {
+		// TODO Auto-generated method stub
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn = DriverManager.getConnection
+					("jdbc:mysql://localhost:3306/sqldb", "root","1234");
+			
+			String sql = "SELECT pw,name FROM logintbl WHERE id='"+tfId.getText()+"'";
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			if(rs.next()) {
+				String dbpw = rs.getString("pw");
+				String pw = tfPw.getText();
+				if(dbpw.equals(pw)) {
+					String id = tfId.getText();
+					String name = rs.getString("name");
+					WinMain winmain = new WinMain(id,name);
+					setVisible(false);
+					winmain.setModal(true);
+					winmain.setVisible(true);
+					
+				}
+				else {
+					JOptionPane.showMessageDialog(null, "비밀번호가 틀렸습니다. 다시확인해주세요");
+					tfPw.requestFocus();
+				}
+			
+			}
+			else {
+				JOptionPane.showMessageDialog(null, "없는 아이디입니다. 다시확인해주세요");
+				tfId.requestFocus();
+			}
+			
+			} catch (Exception e1) {
+			e1.printStackTrace();
+			}
+		
+	}
+	
 }
