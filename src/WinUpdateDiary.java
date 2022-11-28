@@ -210,11 +210,10 @@ public class WinUpdateDiary extends JDialog {
 							String pic = "./weather/"+cbWeather.getSelectedItem()+".png";
 							String title = tfTitle.getText();
 							String content = tfContent.getText();
-							String id = tfId.getText();
-							String curpw = tfPw.getText();
+							
 							
 							String sql = "UPDATE diarytbl SET mdate='"+mdate+"', weather='"+weather+"', pic='"+pic+"', "
-									+ "title='"+title+"', content='"+title+"' WHERE mdate='"+sdate+"' and id='"+sid+"' ";
+									+ "title='"+title+"', content='"+content+"' WHERE mdate='"+sdate+"' and id='"+sid+"' ";
 							Statement stmt = conn.createStatement();
 							stmt.executeUpdate(sql);
 							
