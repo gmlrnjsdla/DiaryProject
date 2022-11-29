@@ -6,6 +6,7 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 
 import com.mysql.cj.exceptions.RSAException;
 
@@ -19,17 +20,22 @@ import javax.swing.JTable;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.SwingConstants;
 
 public class WinMain extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	String sid, sname;
+	DefaultTableModel model;
+	private JTable table;
 
 
 	/**
 	 * Create the dialog.
 	 */
 	public WinMain(String id, String name) {
+		
 		sid = id;
 		sname = name;
 		setTitle(sname+"님의 다이어리");
@@ -39,6 +45,20 @@ public class WinMain extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(new BorderLayout(0, 0));
+		{
+			JScrollPane scrollPane = new JScrollPane();
+			contentPanel.add(scrollPane, BorderLayout.CENTER);
+			{
+				String header[]= {"NO","Name","Title","Date"};
+				DefaultTableModel model=new DefaultTableModel(header,0);
+				
+				table = new JTable(model);
+				scrollPane.setViewportView(table);
+				diaryList(id);
+			}
+			
+			
+		}
 		
 		{
 			JPanel buttonPane = new JPanel();
@@ -101,4 +121,41 @@ public class WinMain extends JDialog {
 			}
 		}
 	}
+
+
+	private void diaryList(String sid) {
+		// TODO Auto-generated method stub
+		try {
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			Connection conn = DriverManager.getConnection
+					("jdbc:mysql://localhost:3306/sqldb", "root","1234");
+			
+			String sql ="SELECT * FROM diarytbl WHERE id='"+sid+"' ORDER BY idx DESC"; 
+			Statement stmt = conn.createStatement();
+			ResultSet rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				String idx = rs.getString("idx");
+				String id = rs.getString("id");
+				String title = rs.getString("title");
+				String date = rs.getString("mdate");
+				
+				
+				DefaultTableModel model = (DefaultTableModel)table.getModel();
+				String record[] = new String [4];
+				record[0] = idx;
+				record[1] = id;
+				record[2] = title;
+				record[3] = date;
+				
+				
+				model.addRow(record);
+			}
+			
+			} catch (Exception e1) {
+			e1.printStackTrace();
+			}
+	}
+	
+	
 }
